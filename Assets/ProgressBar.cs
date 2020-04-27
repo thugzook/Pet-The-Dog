@@ -7,7 +7,8 @@ public class ProgressBar : FillBar
 {
 
     // Event to invoke when the progress bar fills up
-    private UnityEvent onProgressComplete;
+    [HideInInspector]
+    public static UnityEvent onProgressComplete;
 
     // Create a property to handle the slider's value
     public new float CurrentValue
@@ -22,8 +23,7 @@ public class ProgressBar : FillBar
             if (value >= slider.maxValue)
                 onProgressComplete.Invoke();
 
-            // Remove any overfill (i.e. 105% fill -> 5% fill)
-            base.CurrVal = value % slider.maxValue;
+            base.CurrVal = value;
         }
     }
 
