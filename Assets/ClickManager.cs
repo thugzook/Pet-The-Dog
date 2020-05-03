@@ -7,13 +7,18 @@ public class ClickManager : MonoBehaviour
     private GameObject hand;
     private GameObject player;
     public static bool isPet; // true if player clicking dog
+    public static bool isExtend; // true if player clicks
+    private static Vector3 handPos;
+
 
     // Start is called before the first frame update
     void Start()
     {
         hand = GameObject.Find("Hand");
         player = GameObject.Find("Player");
+        handPos = new Vector3(hand.transform.position.x, hand.transform.position.y, 1);
         isPet = false;
+        isExtend = false;
     }
 
     // Update is called once per frame
@@ -29,9 +34,6 @@ public class ClickManager : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
             if (hit.collider != null)
             {
-                SpriteRenderer sprite;
-                sprite = hit.collider.gameObject.GetComponent<SpriteRenderer>();
-                sprite.color = new Color(0.3f, 0.3f, 0.3f);
                 hand.transform.position = new Vector3(mousePos.x, mousePos.y, -1);
                 isPet = true;
             }
@@ -39,13 +41,19 @@ public class ClickManager : MonoBehaviour
             {
                 hand.transform.position = new Vector3(mousePos.x, mousePos.y, -1);
                 isPet = false;
+                isExtend = true;
+
+                /// Access outside script
+                //HandShake handScript = hand.GetComponent<HandShake>();
+                //andScript.MovingShake(hand.transform.position);
             }
         }
         // return hand to default position
         else if (Input.GetMouseButtonUp(0))
         {
-            hand.transform.position = new Vector3(player.transform.position.x + 0.5f, player.transform.position.y, 0);
+            hand.transform.position = handPos;
             isPet = false;
+            isExtend = false;
         }
     }
 }

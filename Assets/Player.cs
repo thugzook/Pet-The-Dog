@@ -1,17 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class dogPet : MonoBehaviour
+public class PlayerPet : MonoBehaviour
 {
     public Sprite idleAnim;
     public Sprite petAnim;
- 
-    void Pet()
-    {
-        
-    }
 
     // Start is called before the first frame update
     void Start()

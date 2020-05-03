@@ -5,6 +5,10 @@ using UnityEngine.Events;
 
 class Owner
 {
+    /*
+     * _timeMin and _timeMax adjust the length of READY state of owner
+     * _timeRest adjusts length of IDLE state
+     */
     public float _timeMin { get; set; }
     public float _timeMax { get; set; }
     public float _timeRest { get; set; }
@@ -52,7 +56,7 @@ public class OwnerLook : MonoBehaviour
         // difficulty goes here
         if (true)
         {
-            owner = new Owner(2.0f, 4.0f, 3.0f);
+            owner = new Owner(2.0f, 3.0f, 3.0f);
         }
 
         // initialize timer
@@ -74,6 +78,7 @@ public class OwnerLook : MonoBehaviour
 
     void CheckTimer()
     {
+        // change state of owner
         timer -= Time.deltaTime;
         if (timer < 0)
         {
@@ -91,7 +96,7 @@ public class OwnerLook : MonoBehaviour
                 owner._state = state.LOOKING;
                 sprite.color = Color.red;
             }
-            else
+            else // owner._state == state.LOOKING
             {
                 timer = (float)(rand.NextDouble() * (owner._timeRest - owner._timeRest / 2) + owner._timeRest / 2);
                 Debug.Log("IDLE timer: " + timer);
