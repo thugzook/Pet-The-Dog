@@ -1,24 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ClickManager : MonoBehaviour
 {
-    private GameObject hand;
-    private GameObject player;
+    private static GameObject player;
+    public static GameObject GameController;
     public static bool isPet; // true if player clicking dog
     public static bool isExtend; // true if player clicks
-    private static Vector3 handPos;
 
+    public UnityEvent handTrack;
+    public UnityEvent handRetract;
 
     // Start is called before the first frame update
     void Start()
     {
-        hand = GameObject.Find("Hand");
+        // initialize Player and gameState variables
         player = GameObject.Find("Player");
-        handPos = new Vector3(hand.transform.position.x, hand.transform.position.y, 1);
+        GameController = GameObject.FindWithTag("GameController");
         isPet = false;
         isExtend = false;
+
+        // Initialize handTrack and handRetract
+        if (handTrack == null)
+            handTrack = new UnityEvent();
+        if (handRetract == null)
+            handRetract = new UnityEvent();
+
     }
 
     // Update is called once per frame
@@ -28,32 +37,12 @@ public class ClickManager : MonoBehaviour
         // If dog is not clicked, move hand to position
         if (Input.GetMouseButton(0))
         {
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
-
-            RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
-            if (hit.collider != null)
-            {
-                hand.transform.position = new Vector3(mousePos.x, mousePos.y, -1);
-                isPet = true;
-            }
-            else
-            {
-                hand.transform.position = new Vector3(mousePos.x, mousePos.y, -1);
-                isPet = false;
-                isExtend = true;
-
-                /// Access outside script
-                //HandShake handScript = hand.GetComponent<HandShake>();
-                //andScript.MovingShake(hand.transform.position);
-            }
+            handTrack.Invoke();
         }
         // return hand to default position
         else if (Input.GetMouseButtonUp(0))
         {
-            hand.transform.position = handPos;
-            isPet = false;
-            isExtend = false;
+            handRetract.Invoke();
         }
     }
 }

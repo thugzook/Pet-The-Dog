@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HandShake : MonoBehaviour
+public class ArmShake : MonoBehaviour
 {
-    // controls shaking of hand
-    private static float amount = .05f;
-    private static Vector3 startingPos;
+    private Vector3 startingPos;
+    private static float amount = .02f;
 
     // Start is called before the first frame update
     void Start()
@@ -17,14 +16,11 @@ public class HandShake : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!ClickManager.isExtend && !ClickManager.isPet)
-        {
-            IdleShake();
-        }
-        
+        // Shake when arm object exists
+        Shake();
     }
 
-    void IdleShake()
+    void Shake()
     {
         gameObject.transform.position = new Vector3(startingPos.x + Random.insideUnitCircle.x * amount,
                                              startingPos.y + Random.insideUnitCircle.y * amount,
