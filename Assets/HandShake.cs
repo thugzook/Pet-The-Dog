@@ -17,7 +17,7 @@ public class HandShake : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!ClickManager.isExtend && !ClickManager.isPet)
+        if (!ClickManager.isExtend)
         {
             IdleShake();
         }
@@ -26,8 +26,7 @@ public class HandShake : MonoBehaviour
 
     void IdleShake()
     {
-        gameObject.transform.position = new Vector3(startingPos.x + Random.insideUnitCircle.x * amount,
-                                             startingPos.y + Random.insideUnitCircle.y * amount,
-                                               1);
+        gameObject.transform.position = new Vector2(startingPos.x + Random.insideUnitCircle.x * amount,
+                                             startingPos.y + Random.insideUnitCircle.y * amount);
     }
 }

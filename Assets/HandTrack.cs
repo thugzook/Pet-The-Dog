@@ -18,9 +18,6 @@ public class HandTrack : MonoBehaviour
 
         // is equal when hand is retracted
         lastPos = originPos;
-
-        // initialize armManager script
-        //armManager = ClickManager.GameController.GetComponent<ArmManager>();
     }
 
     // Update is called once per frame
@@ -35,42 +32,25 @@ public class HandTrack : MonoBehaviour
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
 
-        // Draw arm segments
+        // Enqueue IEnumerators to armDrawCalls to draw arms
         // if lastPos == originPos, pass originPos as origin point to drawArm
         if (lastPos.Equals(originPos))
         {
-            StartCoroutine(ClickManager.GameController.GetComponent<ArmManager>().drawArm(new Vector2(originPos.x - 0.5f, originPos.y - 0.5f), mousePos));
-            // ClickManager.GameController.GetComponent<ArmManager>().drawArm(new Vector2(originPos.x - 0.5f, originPos.y - 0.5f), mousePos);
+            ArmManager.armDrawCalls.Enqueue(ClickManager.GameController.GetComponent<ArmManager>().drawArm(new Vector2(originPos.x - 0.5f, originPos.y - 0.5f), mousePos));
         }
-        // else, pass lastPos as originPoint
+        // else if distance is insignificant, do not draw
+        else if (Vector3.Distance(lastPos, mousePos) < 0.3f)
+        {
+            return;
+        }
+        // draw arm segment from last pos
         else
         {
-            StartCoroutine(ClickManager.GameController.GetComponent<ArmManager>().drawArm(lastPos, mousePos));
-            // ClickManager.GameController.GetComponent<ArmManager>().drawArm(lastPos, mousePos);
+            ArmManager.armDrawCalls.Enqueue(ClickManager.GameController.GetComponent<ArmManager>().drawArm(lastPos, mousePos));
         }
 
         // update last clicked position
         lastPos = mousePos;
-
-        /// TODO: Redo this raycasting system to utilize colliders for the hand, rather than click position
-        RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
-
-        // Manage what the hand has collided with
-        if (hit.collider != null)
-        {
-            gameObject.transform.position = new Vector3(mousePos.x, mousePos.y, -1);
-            ClickManager.isPet = true;
-        }
-        else
-        {
-            gameObject.transform.position = new Vector3(mousePos.x, mousePos.y, -1);
-            ClickManager.isPet = false;
-            ClickManager.isExtend = true;
-
-            /// Access outside script
-            //HandShake handScript = hand.GetComponent<HandShake>();
-            //HandScript.MovingShake(hand.transform.position);
-        }
     }
 
     public void RetractHand()
@@ -80,7 +60,7 @@ public class HandTrack : MonoBehaviour
         ClickManager.isPet = false;
         ClickManager.isExtend = false;
 
-        // Reset lastPos 
+        // Reset lastPos and destroy all arm instances
         lastPos = originPos;
         StartCoroutine(ClickManager.GameController.GetComponent<ArmManager>().destroyArm());
     }

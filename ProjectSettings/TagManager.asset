@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Dog
+  - Hand
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -14,10 +16,10 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - Background
+  - Hand
+  - Main Sprites
+  - Arm
   - 
   - 
   - 
@@ -41,4 +43,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 1434952305
+    locked: 0
+  - name: Arm
+    uniqueID: 2143402187
+    locked: 0
+  - name: Hand
+    uniqueID: 1922059877
+    locked: 0
+  - name: Main Sprites
+    uniqueID: 3425324487
     locked: 0

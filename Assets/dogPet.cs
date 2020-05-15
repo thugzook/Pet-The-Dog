@@ -27,4 +27,19 @@ public class dogPet : MonoBehaviour
         else
             this.GetComponent<SpriteRenderer>().sprite = idleAnim;
     }
+
+    // Detects if player collides with Dog
+    void OnTriggerEnter2D(Collider2D coll)
+    {
+        if (coll.name == "Hand")
+        {
+            ClickManager.isPet = true;
+            Debug.Log("IM PETTING: " + coll.name);
+        }
+    }
+    void OnTriggerExit2D(Collider2D coll)
+    {
+        ClickManager.isPet = false;
+        Debug.Log("IM NOT: " + coll.name);
+    }
 }
