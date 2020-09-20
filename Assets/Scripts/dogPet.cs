@@ -34,12 +34,18 @@ public class dogPet : MonoBehaviour
         if (coll.name == "Hand")
         {
             ClickManager.isPet = true;
-            Debug.Log("IM PETTING: " + coll.name);
         }
     }
     void OnTriggerExit2D(Collider2D coll)
     {
         ClickManager.isPet = false;
-        Debug.Log("IM NOT: " + coll.name);
+    }
+    void OnCollisionEnter2D(Collision2D coll)
+    {
+        if(coll.collider.name == "Hand")
+        {
+            ClickManager.isPet = true;
+        }
+        
     }
 }

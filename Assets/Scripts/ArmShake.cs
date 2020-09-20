@@ -26,4 +26,10 @@ public class ArmShake : MonoBehaviour
                                              startingPos.y + Random.insideUnitCircle.y * amount,
                                                1);
     }
+
+    // Detects if player collides with anything
+    void OnTriggerEnter2D(Collider2D coll)
+    {
+        Debug.Log("Collision: " + coll.name);
+    }
 }

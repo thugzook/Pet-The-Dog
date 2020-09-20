@@ -39,7 +39,7 @@ public class HandTrack : MonoBehaviour
             ArmManager.armDrawCalls.Enqueue(ClickManager.GameController.GetComponent<ArmManager>().drawArm(new Vector2(originPos.x - 0.5f, originPos.y - 0.5f), mousePos));
         }
         // else if distance is insignificant, do not draw
-        else if (Vector3.Distance(lastPos, mousePos) < 0.3f)
+        else if (Vector3.Distance(lastPos, mousePos) < 0.2f)
         {
             return;
         }

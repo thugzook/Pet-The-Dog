@@ -9,6 +9,8 @@ public class ProgressBar : FillBar
     // Event to invoke when the progress bar fills up
     [HideInInspector]
     public static UnityEvent onProgressComplete;
+    private static Transform MaskPos_start; 
+    public SpriteMask spriteMask;
 
     // Create a property to handle the slider's value
     public new float CurrentValue
@@ -27,19 +29,31 @@ public class ProgressBar : FillBar
         }
     }
 
+    private Vector2 MaskPos;
+
     void Start()
     {
         // Initialize onProgressComplete and set a basic callback
         if (onProgressComplete == null)
             onProgressComplete = new UnityEvent();
         onProgressComplete.AddListener(OnProgressComplete);
+
+        // Initialize starting postiion of Sprite Mask for progress
+        if (MaskPos_start == null)
+            MaskPos_start = spriteMask.GetComponent<Transform>();
+
+        MaskPos = new Vector2(MaskPos_start.position.x, MaskPos_start.position.y);
     }
 
     void Update()
     {
-        // Check to see if dog is pet
+        // if dog is pet
         if (ClickManager.isPet)
+        {
             CurrentValue += 0.0153f;
+            MaskPos = new Vector2(3.8f * (CurrentValue / slider.maxValue) / 0.53923f, MaskPos_start.position.y); 
+            spriteMask.GetComponent<Transform>().position = new Vector3(MaskPos.x, MaskPos.y, 0);
+        }
     }
 
     // The method to call when the progress bar fills up
