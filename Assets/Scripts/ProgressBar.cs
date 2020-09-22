@@ -51,9 +51,9 @@ public class ProgressBar : FillBar
         if (ClickManager.isPet)
         {
             CurrentValue += 0.0153f;
-            MaskPos = new Vector2(3.8f * (CurrentValue / slider.maxValue) / 0.53923f, MaskPos_start.position.y); 
-            spriteMask.GetComponent<Transform>().position = new Vector3(MaskPos.x, MaskPos.y, 0);
         }
+        MaskPos = new Vector2(3.8f * (CurrentValue / slider.maxValue) / 0.53923f, MaskPos_start.position.y);
+        spriteMask.GetComponent<Transform>().position = new Vector3(MaskPos.x, MaskPos.y, 0);
     }
 
     // The method to call when the progress bar fills up

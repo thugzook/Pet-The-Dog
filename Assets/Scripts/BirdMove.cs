@@ -8,6 +8,8 @@ public class BirdMove : MonoBehaviour
 
     public float spawnRate = 3f; // lower value increases frequency
     public bool isPoop = false;
+    public static bool enabled = false;
+
     private static float timer; // determines the frequency of the pooping
     private Rigidbody2D rb2d;
     private float SPEED = 5f;
@@ -20,10 +22,10 @@ public class BirdMove : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        rb2d = GetComponent<Rigidbody2D>();
         // initialize bird move right
-        if (isPoop)
+        if (isPoop && enabled)
         {
-            rb2d = GetComponent<Rigidbody2D>();
             rb2d.velocity = new Vector2(SPEED, 0);
             StartCoroutine("PoopHandler");
         }
@@ -35,10 +37,22 @@ public class BirdMove : MonoBehaviour
         
     }
 
-    // Detects if bird collides with walls
+    // Detects if bird hits the boundary walls
+    void OnTriggerEnter2D(Collider2D coll)
+    {
+        if (coll.CompareTag("Wall"))
+        {
+            // Flip the bird image and velocity
+            Vector3 lTemp = transform.localScale;
+            lTemp.x *= -1;
+            transform.localScale = lTemp;
+            rb2d.velocity = new Vector2(-rb2d.velocity.x, 0);
+        }
+    }
+
     void OnCollisionEnter2D(Collision2D coll)
     {
-        // Flip the bird image
+        // if hit by player, send bird away and disable rigid body
         Vector3 lTemp = transform.localScale;
         lTemp.x *= -1;
         transform.localScale = lTemp;

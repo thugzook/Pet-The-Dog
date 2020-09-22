@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEditor;
 
 class Owner
 {
@@ -37,7 +38,10 @@ public class OwnerLook : MonoBehaviour
     public static UnityEvent OwnerCaughtYou;
 
     // Define difficulty scene-by-scene
-    public int Difficulty;
+    public static int Difficulty;
+
+    // Determines if grandpa looking is enabled
+    public static bool enabled;
 
     // Switches owner state when needed
     private static float timer;
@@ -79,7 +83,7 @@ public class OwnerLook : MonoBehaviour
     {
         // change state of owner
         timer -= Time.deltaTime;
-        if (timer < 0)
+        if (timer < 0 && enabled)
         {
             if (owner._state == state.IDLE)
             {
@@ -94,6 +98,7 @@ public class OwnerLook : MonoBehaviour
                 timer = (float)(rand.NextDouble() * (3.0f - 1.0f) + 1.0f);
                 owner._state = state.LOOKING;
                 sprite.color = Color.red;
+                sprite.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Art/grandpaangry.png", typeof(Sprite));
             }
             else // owner._state == state.LOOKING
             {
@@ -101,6 +106,7 @@ public class OwnerLook : MonoBehaviour
                 timer = (float)(rand.NextDouble() * (owner._timeRest - owner._timeRest / 2) + owner._timeRest / 2);
                 owner._state = state.IDLE;
                 sprite.color = Color.green;
+                sprite.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Art/grandpacalm.png", typeof(Sprite));
             }
         }
     }
