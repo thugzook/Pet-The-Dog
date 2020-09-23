@@ -50,7 +50,7 @@ public class OwnerLook : MonoBehaviour
     Owner owner;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // Initialize OwnerCaughtYou
         if (OwnerCaughtYou == null)
@@ -74,9 +74,12 @@ public class OwnerLook : MonoBehaviour
     {
         CheckTimer();
 
-        // Loss State
+        // Player petting while owner is looking
         if (ClickManager.isPet && owner._state == state.LOOKING)
+        {
             OwnerCaughtYou.Invoke();
+            ClickManager.isPet = false;
+        }       
     }
 
     void CheckTimer()

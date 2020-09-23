@@ -7,8 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public UnityEvent Win;
-    public UnityEvent Lose;
     public GameObject attackBird;
     public int attackBirdLimit = 2;
     private List<GameObject> attackBirdList = new List<GameObject>();
@@ -16,32 +14,67 @@ public class GameManager : MonoBehaviour
     private static float timer;
     private static Vector3 dogPosition;
     private static int level = 2;
-    private static float health = 3f;
-
+    private static int health = 3;
 
     System.Random rand = new System.Random();
 
-    void LevelLose()
+    // Defines what the player lost to
+    public enum lossState
     {
-        Lose.Invoke();
+        OWNER,
+        BIRD
+    }
+
+    void LevelLose(lossState loss)
+    {
+        // Pause all functionality
+        Time.timeScale = 0;
+        GameObject.Find("Hand").GetComponent<HandShake>().enabled = false;
+        GameObject.Find("Click Manager").GetComponent<ClickManager>().enabled = false;
+        switch (loss)
+        {
+            case lossState.OWNER:
+                Debug.Log("Owner Loss");
+                break;
+            case lossState.BIRD:
+                Debug.Log("Bird Loss");
+                break;
+        }
     }
 
     void LevelWin()
     {
         // increment level and call level manager
-        Win.Invoke();
         level++;
         levelManager();
+
+        // Reload scene
         GameObject.Find("LevelText").GetComponent<UnityEngine.UI.Text>().text = "Level " + (level + 1);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    private void loseHealth(int amt, lossState loss)
+    {
+        health -= amt;
+        if (health <= 0)
+        {
+            GameObject.Find("Health").GetComponent<UnityEngine.UI.Text>().text = "0";
+            LevelLose(loss);
+        }
+        else
+        {
+            //GameObject.Find("Click Manager").GetComponent<ClickManager>().handRetract.Invoke();
+            GameObject.Find("Health").GetComponent<UnityEngine.UI.Text>().text = health.ToString();
+        }
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
         // initialize game elements
         ProgressBar.onProgressComplete.AddListener(LevelWin);
-        OwnerLook.OwnerCaughtYou.AddListener(LevelLose);
+        OwnerLook.OwnerCaughtYou.AddListener(delegate { loseHealth(3, lossState.OWNER); }) ; // create a delegate for health loss when owner looks at you
         dogPosition = GameObject.Find("Dog").GetComponent<Transform>().position;
         // Manage levels
         levelManager();
@@ -57,7 +90,6 @@ public class GameManager : MonoBehaviour
                 // disable unneeded features
                 OwnerLook.enabled = false;
                 GameObject.Find("Health").SetActive(false);
-                GameObject.Find("Vacuum").SetActive(false);
                 BirdMove.enabled = false;
                 break;
             // Level 2: Grandpa looking
@@ -66,18 +98,28 @@ public class GameManager : MonoBehaviour
                 break;
             // Level 3: Decreasing pet level
             case 2:
+                OwnerLook.enabled = true;
                 StartCoroutine("DecreaseProgress");
                 break;
-            // Level 4: Bird poop retracts player's hand
+            // Level 4: Kid comes to pet the dog
             case 3:
+                OwnerLook.enabled = true;
                 BirdMove.enabled = true;
+                StartCoroutine("DecreaseProgress");
+                StartCoroutine("KidPet");
                 break;
             // Level 5: Birds attack (hurts dog)
             case 4:
+                OwnerLook.enabled = true;
+                BirdMove.enabled = true;
+                StartCoroutine("DecreaseProgress");
                 StartCoroutine("SpawnAttackBirds");
                 break;
             // Level 6: More birds attack
             case 5:
+                OwnerLook.enabled = true;
+                BirdMove.enabled = true;
+                StartCoroutine("DecreaseProgress");
                 StartCoroutine("SpawnAttackBirds");
                 break;
             // Level 7: Birds take over grandpa's body
@@ -90,6 +132,16 @@ public class GameManager : MonoBehaviour
             case 8:
                 break;
         }
+    }
+
+
+private IEnumerator KidPet()
+    {
+        while (true)
+        {
+
+            yield return null;
+        } 
     }
 
 private IEnumerator DecreaseProgress()
