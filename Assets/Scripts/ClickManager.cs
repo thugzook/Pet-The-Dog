@@ -37,8 +37,16 @@ public class ClickManager : MonoBehaviour
         // If dog is not clicked, move hand to position
         if (Input.GetMouseButton(0))
         {
-            isExtend = true;
-            handTrack.Invoke();
+            // Do not allow clicking and dragging unless hand is already extended
+            if (isExtend)
+            {
+                handTrack.Invoke();
+            }
+            else if (Input.GetMouseButtonDown(0))
+            {
+                isExtend = true;
+                handTrack.Invoke();
+            }
         }
         // return hand to default position
         else if (Input.GetMouseButtonUp(0))

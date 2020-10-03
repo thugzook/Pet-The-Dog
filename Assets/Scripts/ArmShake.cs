@@ -6,6 +6,8 @@ public class ArmShake : MonoBehaviour
 {
     private Vector3 startingPos;
     private static float amount = .02f;
+    public GameObject clickManager;
+    static float prevTime = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +32,15 @@ public class ArmShake : MonoBehaviour
     // Detects if player collides with anything
     void OnTriggerEnter2D(Collider2D coll)
     {
-        Debug.Log("Collision: " + coll.name);
+        // lose health on contact and time since prevTime is > 0.25sec
+        if (coll.name == "Poop(Clone)" && (Time.time - prevTime) > 0.25f )
+        {
+            prevTime = Time.time;
+            ClickManager.isExtend = false;
+            clickManager.GetComponent<ClickManager>().handRetract.Invoke();
+            GameObject.Find("Game Manager").GetComponent<GameManager>().loseHealth(0.5f, GameManager.lossState.BIRD);
+        }
+        // Destroy the Object and reset timer
+        Destroy(coll.gameObject);
     }
 }

@@ -8,7 +8,6 @@ public class BirdMove : MonoBehaviour
 
     public float spawnRate = 3f; // lower value increases frequency
     public bool isPoop = false;
-    public static bool enabled = false;
 
     private static float timer; // determines the frequency of the pooping
     private Rigidbody2D rb2d;
@@ -18,20 +17,26 @@ public class BirdMove : MonoBehaviour
     private List<GameObject> attackInstance;
 
     System.Random rand = new System.Random();
-    
+
+    private void Awake()
+    {
+        
+    }
     // Start is called before the first frame update
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         // initialize bird move right
-        if (isPoop && enabled)
+        if (isPoop)
         {
             rb2d.velocity = new Vector2(SPEED, 0);
             StartCoroutine("PoopHandler");
         }
-
-        // Destroy after a set amount of time (i.e. has been off screen for too long)
-        Destroy(gameObject, 10f);
+        else
+        {
+            // Destroy after a set amount of time (i.e. has been off screen for too long)
+            Destroy(gameObject, 10f);
+        }
     }
 
     // Update is called once per frame
@@ -50,7 +55,6 @@ public class BirdMove : MonoBehaviour
     // Detects if bird hits the boundary walls
     void OnTriggerEnter2D(Collider2D coll)
     {
-        Debug.Log(coll.name);
         if (coll.CompareTag("Wall"))
         {
             // Flip the bird image and velocity
