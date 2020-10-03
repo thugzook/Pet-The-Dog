@@ -29,6 +29,9 @@ public class BirdMove : MonoBehaviour
             rb2d.velocity = new Vector2(SPEED, 0);
             StartCoroutine("PoopHandler");
         }
+
+        // Destroy after a set amount of time (i.e. has been off screen for too long)
+        Destroy(gameObject, 10f);
     }
 
     // Update is called once per frame
@@ -37,9 +40,17 @@ public class BirdMove : MonoBehaviour
         
     }
 
+    private void OnDestroy()
+    {
+        // remove from attack bird list if found
+        if (GameManager.attackBirdList.Contains(gameObject))
+            GameManager.attackBirdList.Remove(gameObject);
+    }
+
     // Detects if bird hits the boundary walls
     void OnTriggerEnter2D(Collider2D coll)
     {
+        Debug.Log(coll.name);
         if (coll.CompareTag("Wall"))
         {
             // Flip the bird image and velocity
@@ -48,14 +59,23 @@ public class BirdMove : MonoBehaviour
             transform.localScale = lTemp;
             rb2d.velocity = new Vector2(-rb2d.velocity.x, 0);
         }
+        else if (coll.name == "Hand")
+        {
+            rb2d.velocity = new Vector2(0, 0);
+            rb2d.gravityScale = 1;
+            // disable further collisions
+            gameObject.GetComponent<BoxCollider2D>().size = Vector2.zero;
+            // remove the bird from the list
+            GameManager.attackBirdList.Remove(gameObject);
+        }
+        else if (coll.name == "Dog")
+        {
+            GameObject.Find("Game Manager").GetComponent<GameManager>().loseHealth(1, GameManager.lossState.BIRD);
+        }
     }
 
     void OnCollisionEnter2D(Collision2D coll)
     {
-        // if hit by player, send bird away and disable rigid body
-        Vector3 lTemp = transform.localScale;
-        lTemp.x *= -1;
-        transform.localScale = lTemp;
     }
 
     // Drops a poop at bird location

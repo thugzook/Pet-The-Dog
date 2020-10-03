@@ -23,8 +23,10 @@ public class ProgressBar : FillBar
         {
             // If the value exceeds the max fill, invoke the completion function
             if (value >= slider.maxValue)
+            {
                 onProgressComplete.Invoke();
-
+                value = 0;
+            }
             base.CurrVal = value;
         }
     }

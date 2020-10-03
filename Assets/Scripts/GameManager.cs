@@ -9,12 +9,12 @@ public class GameManager : MonoBehaviour
 {
     public GameObject attackBird;
     public int attackBirdLimit = 2;
-    private List<GameObject> attackBirdList = new List<GameObject>();
+    public static List<GameObject> attackBirdList = new List<GameObject>();
 
-    private static float timer;
     private static Vector3 dogPosition;
-    private static int level = 2;
+    private static int level = -1;
     private static int health = 3;
+    private static int spawnRate = 4;
 
     System.Random rand = new System.Random();
 
@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void LevelWin()
+    public void LevelWin()
     {
         // increment level and call level manager
         level++;
@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    private void loseHealth(int amt, lossState loss)
+    public void loseHealth(int amt, lossState loss)
     {
         health -= amt;
         if (health <= 0)
@@ -85,6 +85,22 @@ public class GameManager : MonoBehaviour
     {
         switch (level)
         {
+            // Level 0: Main Menu
+            case -1:
+                // hide all game objects
+                GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+                // disable click manager
+                GameObject.Find("Click Manager").GetComponent<ClickManager>().enabled = false;
+                foreach (GameObject go in allObjects)
+                {
+                    if (go.GetComponent<Renderer>() && !(go.name == "Background"))
+                    {
+                        float alpha = go.GetComponent<Renderer>().material.color.a;
+                        Color newColor = new Color(1, 1, 1, 0);
+                        go.GetComponent<Renderer>().material.color = newColor;
+                    }
+                }
+                break;
             // Level 1: No Grandpa
             case 0:
                 // disable unneeded features
@@ -103,10 +119,9 @@ public class GameManager : MonoBehaviour
                 break;
             // Level 4: Kid comes to pet the dog
             case 3:
-                OwnerLook.enabled = true;
-                BirdMove.enabled = true;
-                StartCoroutine("DecreaseProgress");
-                StartCoroutine("KidPet");
+                // SKIP THIS LEVEL
+                level++;
+                levelManager();
                 break;
             // Level 5: Birds attack (hurts dog)
             case 4:
@@ -119,7 +134,9 @@ public class GameManager : MonoBehaviour
             case 5:
                 OwnerLook.enabled = true;
                 BirdMove.enabled = true;
+                attackBirdList.Clear();
                 StartCoroutine("DecreaseProgress");
+                Debug.Log(attackBirdList.Count);
                 StartCoroutine("SpawnAttackBirds");
                 break;
             // Level 7: Birds take over grandpa's body
@@ -134,16 +151,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-private IEnumerator KidPet()
-    {
-        while (true)
-        {
-
-            yield return null;
-        } 
-    }
-
 private IEnumerator DecreaseProgress()
     {
         while (true)
@@ -154,9 +161,20 @@ private IEnumerator DecreaseProgress()
         }
     }
 
+private IEnumerator KidPetDecreaseProgress()
+    {
+        while (true)
+        {
+            if (GameObject.Find("Slider").GetComponent<ProgressBar>().CurrentValue > 0)
+                GameObject.Find("Slider").GetComponent<ProgressBar>().CurrentValue -= 0.004f;
+            yield return new WaitForSeconds(0.01f);
+        }
+    }
+
 // Spawns attack birds
 private IEnumerator SpawnAttackBirds()
     {
+        float timer = 0f;
         while (true)
         {
             if (attackBirdList.Count < attackBirdLimit)
@@ -177,8 +195,8 @@ private IEnumerator SpawnAttackBirds()
                     GameObject birdInstance = Instantiate(attackBird, new Vector2(x_pos, y_pos), q);
 
                     vectorToDog.Normalize();
-
-                    birdInstance.GetComponent<Rigidbody2D>().velocity = new Vector2(vectorToDog.x, vectorToDog.y);
+                    float randSpeed = (float)(rand.NextDouble() * (5f + 1f) - 1f);
+                    birdInstance.GetComponent<Rigidbody2D>().velocity = new Vector2(vectorToDog.x * randSpeed, vectorToDog.y * randSpeed);
                     attackBirdList.Add(birdInstance);
 
                     // flip attack bird if spawned on right side
@@ -187,10 +205,11 @@ private IEnumerator SpawnAttackBirds()
                     birdInstance.GetComponent<Transform>().localScale = lTemp;
 
                     // reset timer
-                    //timer = (float)(rand.NextDouble() * (spawnRate - 0f) + 0f);
+                    timer = (float)(rand.NextDouble() * (spawnRate - 0f) + 0f);
+                    Debug.Log("Timer " + timer);
                 }
             }
-            yield return new WaitForSeconds(1);
+            yield return null;
         }
     }
 
