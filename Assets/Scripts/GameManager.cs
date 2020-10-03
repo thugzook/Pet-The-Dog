@@ -7,13 +7,19 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    // GameObjects controlled by GameManager
     public GameObject attackBird;
+    public GameObject clickManager;
+    public GameObject healthUI;
+    public GameObject levelUI;
+    public GameObject mainMenuUI;
+
     public int attackBirdLimit = 2;
     public static List<GameObject> attackBirdList = new List<GameObject>();
 
     private static Vector3 dogPosition;
     private static int level = -1;
-    private static int health = 3;
+    private static float health = 3f;
     private static int spawnRate = 4;
 
     System.Random rand = new System.Random();
@@ -49,36 +55,40 @@ public class GameManager : MonoBehaviour
         levelManager();
 
         // Reload scene
-        GameObject.Find("LevelText").GetComponent<UnityEngine.UI.Text>().text = "Level " + (level + 1);
+        levelUI.GetComponent<UnityEngine.UI.Text>().text = "Level " + (level + 1);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void loseHealth(int amt, lossState loss)
+    public void loseHealth(float amt, lossState loss)
     {
         health -= amt;
         if (health <= 0)
         {
-            GameObject.Find("Health").GetComponent<UnityEngine.UI.Text>().text = "0";
+            healthUI.GetComponent<UnityEngine.UI.Text>().text = "0";
             LevelLose(loss);
         }
         else
         {
             //GameObject.Find("Click Manager").GetComponent<ClickManager>().handRetract.Invoke();
-            GameObject.Find("Health").GetComponent<UnityEngine.UI.Text>().text = health.ToString();
+            healthUI.GetComponent<UnityEngine.UI.Text>().text = health.ToString();
         }
     }
 
+    void Awake()
+    {
+
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         // initialize game elements
         ProgressBar.onProgressComplete.AddListener(LevelWin);
-        OwnerLook.OwnerCaughtYou.AddListener(delegate { loseHealth(3, lossState.OWNER); }) ; // create a delegate for health loss when owner looks at you
+        OwnerLook.OwnerCaughtYou.AddListener(delegate { loseHealth(3, lossState.OWNER); }); // create a delegate for health loss when owner looks at you
         dogPosition = GameObject.Find("Dog").GetComponent<Transform>().position;
         // Manage levels
         levelManager();
-        GameObject.Find("LevelText").GetComponent<UnityEngine.UI.Text>().text = "Level " + (level + 1);
+        levelUI.GetComponent<UnityEngine.UI.Text>().text = "Level " + (level + 1);
     }
 
     void levelManager()
@@ -89,8 +99,17 @@ public class GameManager : MonoBehaviour
             case -1:
                 // hide all game objects
                 GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+                healthUI.SetActive(false);
+                levelUI.GetComponent<UnityEngine.UI.Text>().text = "";
+
                 // disable click manager
-                GameObject.Find("Click Manager").GetComponent<ClickManager>().enabled = false;
+                clickManager.GetComponent<ClickManager>().enabled = false;
+
+                // show menu buttons
+                mainMenuUI.GetComponent<CanvasGroup>().alpha = 1;
+                mainMenuUI.GetComponent<CanvasGroup>().interactable = true;
+
+                // adjust alphaof all game Objects
                 foreach (GameObject go in allObjects)
                 {
                     if (go.GetComponent<Renderer>() && !(go.name == "Background"))
@@ -105,38 +124,38 @@ public class GameManager : MonoBehaviour
             case 0:
                 // disable unneeded features
                 OwnerLook.enabled = false;
-                GameObject.Find("Health").SetActive(false);
-                BirdMove.enabled = false;
+                healthUI.SetActive(false);
                 break;
             // Level 2: Grandpa looking
             case 1:
                 OwnerLook.enabled = true;
+                healthUI.SetActive(false);
                 break;
             // Level 3: Decreasing pet level
             case 2:
                 OwnerLook.enabled = true;
+                healthUI.SetActive(false);
                 StartCoroutine("DecreaseProgress");
                 break;
-            // Level 4: Kid comes to pet the dog
+            // Level 4: Bird poop hurts half a heart
             case 3:
-                // SKIP THIS LEVEL
-                level++;
-                levelManager();
+                OwnerLook.enabled = true;
+                healthUI.SetActive(true);
+                StartCoroutine("DecreaseProgress");
+                GameObject.Find("PoopBird").GetComponent<BirdMove>().enabled = true;
                 break;
             // Level 5: Birds attack (hurts dog)
             case 4:
                 OwnerLook.enabled = true;
-                BirdMove.enabled = true;
+                healthUI.SetActive(true);
                 StartCoroutine("DecreaseProgress");
-                StartCoroutine("SpawnAttackBirds");
                 break;
             // Level 6: More birds attack
             case 5:
                 OwnerLook.enabled = true;
-                BirdMove.enabled = true;
+                healthUI.SetActive(true);
                 attackBirdList.Clear();
                 StartCoroutine("DecreaseProgress");
-                Debug.Log(attackBirdList.Count);
                 StartCoroutine("SpawnAttackBirds");
                 break;
             // Level 7: Birds take over grandpa's body
@@ -157,16 +176,6 @@ private IEnumerator DecreaseProgress()
         {
             if (GameObject.Find("Slider").GetComponent<ProgressBar>().CurrentValue > 0)
                 GameObject.Find("Slider").GetComponent<ProgressBar>().CurrentValue-= 0.003f;
-            yield return new WaitForSeconds(0.01f);
-        }
-    }
-
-private IEnumerator KidPetDecreaseProgress()
-    {
-        while (true)
-        {
-            if (GameObject.Find("Slider").GetComponent<ProgressBar>().CurrentValue > 0)
-                GameObject.Find("Slider").GetComponent<ProgressBar>().CurrentValue -= 0.004f;
             yield return new WaitForSeconds(0.01f);
         }
     }
@@ -211,6 +220,29 @@ private IEnumerator SpawnAttackBirds()
             }
             yield return null;
         }
+    }
+
+    public IEnumerator FadeTo(float aValue, float aTime)
+    {
+        // Access every gameobject and reduce their alpha value
+        GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / aTime)
+        {
+            foreach (GameObject go in allObjects)
+            {
+                if (go.GetComponent<Renderer>() && !(go.name == "Background"))
+                {
+                    float alpha = go.GetComponent<Renderer>().material.color.a;
+                    Color newColor = new Color(1, 1, 1, Mathf.Lerp(alpha, aValue, 0.2f * Mathf.Pow(t, 2)));
+                    go.GetComponent<Renderer>().material.color = newColor;
+                }
+            }
+            yield return null;
+        }
+        // re-enable click manager once fading is done
+        clickManager.GetComponent<ClickManager>().enabled = true;
+        
+        LevelWin();
     }
 
     // Update is called once per frame

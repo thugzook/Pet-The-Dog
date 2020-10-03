@@ -54,7 +54,7 @@ public class ProgressBar : FillBar
         {
             CurrentValue += 0.0153f;
         }
-        MaskPos = new Vector2(3.8f * (CurrentValue / slider.maxValue) / 0.53923f, MaskPos_start.position.y);
+        MaskPos = new Vector2(MaskPos.x + (CurrentValue / slider.maxValue), MaskPos_start.position.y);
         spriteMask.GetComponent<Transform>().position = new Vector3(MaskPos.x, MaskPos.y, 0);
     }
 

@@ -20,27 +20,16 @@ public class FadeTest : MonoBehaviour
 
     public void Fade()
     {
-        StartCoroutine(FadeTo(1f, 3f));
+        // Fade game objects
+        StartCoroutine(GameObject.Find("Game Manager").GetComponent<GameManager>().FadeTo(1f, 3f));
+
+        // Hide menu options
+        transform.parent.gameObject.GetComponent<CanvasGroup>().alpha = 0f;
+        transform.parent.gameObject.GetComponent<CanvasGroup>().interactable = false;
     }
 
-    IEnumerator FadeTo(float aValue, float aTime)
+    public void Quit()
     {
-        GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
-        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / aTime)
-        {
-            foreach (GameObject go in allObjects)
-            {
-                if (go.GetComponent<Renderer>() && !(go.name=="Background"))
-                {
-                    float alpha = go.GetComponent<Renderer>().material.color.a;
-                    Color newColor = new Color(1, 1, 1, Mathf.Lerp(alpha, aValue, 0.2f*Mathf.Pow(t,2)));
-                    go.GetComponent<Renderer>().material.color = newColor;
-                }
-            }
-            yield return null;
-        }
-        // re-enable click manager once fading is done
-        clickManager.GetComponent<ClickManager>().enabled = true;
-        GameObject.Find("Game Manager").GetComponent<GameManager>().LevelWin();
+        Application.Quit();
     }
 }
