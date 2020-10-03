@@ -9,7 +9,7 @@ public class ProgressBar : FillBar
     // Event to invoke when the progress bar fills up
     [HideInInspector]
     public static UnityEvent onProgressComplete;
-    private static Transform MaskPos_start; 
+    private static Vector2 MaskPos_start; 
     public SpriteMask spriteMask;
 
     // Create a property to handle the slider's value
@@ -41,10 +41,9 @@ public class ProgressBar : FillBar
         onProgressComplete.AddListener(OnProgressComplete);
 
         // Initialize starting postiion of Sprite Mask for progress
-        if (MaskPos_start == null)
-            MaskPos_start = spriteMask.GetComponent<Transform>();
+        MaskPos_start = new Vector2(spriteMask.transform.position.x, spriteMask.transform.position.y);
 
-        MaskPos = new Vector2(MaskPos_start.position.x, MaskPos_start.position.y);
+        MaskPos = new Vector2(MaskPos_start.x, MaskPos_start.y);
     }
 
     void Update()
@@ -54,8 +53,9 @@ public class ProgressBar : FillBar
         {
             CurrentValue += 0.0153f;
         }
-        MaskPos = new Vector2(MaskPos.x + (CurrentValue / slider.maxValue), MaskPos_start.position.y);
-        spriteMask.GetComponent<Transform>().position = new Vector3(MaskPos.x, MaskPos.y, 0);
+        MaskPos = new Vector2(Mathf.Lerp(MaskPos_start.x, 3.8f, (CurrentValue / slider.maxValue)), MaskPos_start.y);
+        //Debug.Log("MaskPos_start: " + MaskPos_start.x +"\nCurr/Max: " + CurrentValue / slider.maxValue + "\nLerp: " + MaskPos.x);
+        spriteMask.GetComponent<Transform>().position = new Vector2(MaskPos.x * 1.6744768f, MaskPos.y); // scale with canvas size
     }
 
     // The method to call when the progress bar fills up
