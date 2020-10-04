@@ -13,12 +13,13 @@ public class GameManager : MonoBehaviour
     public GameObject healthUI;
     public GameObject levelUI;
     public GameObject mainMenuUI;
+    public GameObject owner;
 
     public int attackBirdLimit = 2;
     public static List<GameObject> attackBirdList = new List<GameObject>();
 
     private static Vector3 dogPosition;
-    private static int level = -1;
+    private static int level = 6;
     private static float health = 3f;
     private static int spawnRate = 4;
 
@@ -28,7 +29,8 @@ public class GameManager : MonoBehaviour
     public enum lossState
     {
         OWNER,
-        BIRD
+        BIRD,
+        POOP
     }
 
     void LevelLose(lossState loss)
@@ -45,18 +47,46 @@ public class GameManager : MonoBehaviour
             case lossState.BIRD:
                 Debug.Log("Bird Loss");
                 break;
+            case lossState.POOP:
+                Debug.Log("Poop Loss");
+                break;
         }
+        // make restart button visible and interactable
+        mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().alpha = 1;
+        mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().interactable = true;
     }
+    
+    public void LevelRestart()
+    {
+        Time.timeScale = 1;
+        mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().alpha = 0;
+        mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().interactable = false;
 
+
+        // Reload scene
+        health = 3f;
+        levelManager();
+        levelUI.GetComponent<UnityEngine.UI.Text>().text = "Level " + (level + 1);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        // renable game elements
+        GameObject.Find("Hand").GetComponent<HandShake>().enabled = true;
+        GameObject.Find("Click Manager").GetComponent<ClickManager>().enabled = true;
+
+    }
     public void LevelWin()
     {
         // increment level and call level manager
         level++;
         levelManager();
 
+        // Reset health
+        health = 3f;
+
         // Reload scene
         levelUI.GetComponent<UnityEngine.UI.Text>().text = "Level " + (level + 1);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().interactable = false;
     }
 
     public void loseHealth(float amt, lossState loss)
@@ -109,12 +139,11 @@ public class GameManager : MonoBehaviour
                 mainMenuUI.GetComponent<CanvasGroup>().alpha = 1;
                 mainMenuUI.GetComponent<CanvasGroup>().interactable = true;
 
-                // adjust alphaof all game Objects
+                // adjust alpha of all game Objects
                 foreach (GameObject go in allObjects)
                 {
                     if (go.GetComponent<Renderer>() && !(go.name == "Background"))
                     {
-                        float alpha = go.GetComponent<Renderer>().material.color.a;
                         Color newColor = new Color(1, 1, 1, 0);
                         go.GetComponent<Renderer>().material.color = newColor;
                     }
@@ -148,18 +177,37 @@ public class GameManager : MonoBehaviour
             case 4:
                 OwnerLook.enabled = true;
                 healthUI.SetActive(true);
+                attackBirdList.Clear();
+                attackBirdLimit = 1;
+                spawnRate = 4;
                 StartCoroutine("DecreaseProgress");
+                StartCoroutine("SpawnAttackBirds");
                 break;
             // Level 6: More birds attack
             case 5:
                 OwnerLook.enabled = true;
                 healthUI.SetActive(true);
                 attackBirdList.Clear();
+                attackBirdLimit = 3;
+                spawnRate = 7;
+                // adjust the Owner difficulty to be easier
+                owner.GetComponent<OwnerLook>().owner = new Owner(1.0f, 3.0f, 8.0f);
+                GameObject.Find("PoopBird").GetComponent<BirdMove>().enabled = true;
                 StartCoroutine("DecreaseProgress");
                 StartCoroutine("SpawnAttackBirds");
                 break;
-            // Level 7: Birds take over grandpa's body
+            // Level 7: Hella poop
             case 6:
+                // disable owner
+                owner.SetActive(false);
+                healthUI.SetActive(true);
+                attackBirdList.Clear();
+                attackBirdLimit = 3;
+                spawnRate = 4;
+                GameObject.Find("PoopBird").GetComponent<BirdMove>().enabled = true;
+                GameObject.Find("PoopBird").GetComponent<BirdMove>().spawnRate = 1;
+                StartCoroutine("DecreaseProgress");
+                StartCoroutine("SpawnAttackBirds");
                 break;
             // level 8: INSANE bird level
             case 7:
@@ -175,7 +223,7 @@ private IEnumerator DecreaseProgress()
         while (true)
         {
             if (GameObject.Find("Slider").GetComponent<ProgressBar>().CurrentValue > 0)
-                GameObject.Find("Slider").GetComponent<ProgressBar>().CurrentValue-= 0.003f;
+                GameObject.Find("Slider").GetComponent<ProgressBar>().CurrentValue-= 0.002f;
             yield return new WaitForSeconds(0.01f);
         }
     }
@@ -204,7 +252,7 @@ private IEnumerator SpawnAttackBirds()
                     GameObject birdInstance = Instantiate(attackBird, new Vector2(x_pos, y_pos), q);
 
                     vectorToDog.Normalize();
-                    float randSpeed = (float)(rand.NextDouble() * (5f + 1f) - 1f);
+                    float randSpeed = Random.Range(1.5f, 5);
                     birdInstance.GetComponent<Rigidbody2D>().velocity = new Vector2(vectorToDog.x * randSpeed, vectorToDog.y * randSpeed);
                     attackBirdList.Add(birdInstance);
 
@@ -214,7 +262,7 @@ private IEnumerator SpawnAttackBirds()
                     birdInstance.GetComponent<Transform>().localScale = lTemp;
 
                     // reset timer
-                    timer = (float)(rand.NextDouble() * (spawnRate - 0f) + 0f);
+                    timer = Random.Range(0.5f, spawnRate);
                     Debug.Log("Timer " + timer);
                 }
             }

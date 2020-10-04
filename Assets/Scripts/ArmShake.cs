@@ -38,7 +38,7 @@ public class ArmShake : MonoBehaviour
             prevTime = Time.time;
             ClickManager.isExtend = false;
             clickManager.GetComponent<ClickManager>().handRetract.Invoke();
-            GameObject.Find("Game Manager").GetComponent<GameManager>().loseHealth(0.5f, GameManager.lossState.BIRD);
+            GameObject.Find("Game Manager").GetComponent<GameManager>().loseHealth(0.5f, GameManager.lossState.POOP);
         }
         // Destroy the Object and reset timer
         Destroy(coll.gameObject);

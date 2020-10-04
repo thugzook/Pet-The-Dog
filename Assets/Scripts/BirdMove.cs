@@ -35,7 +35,7 @@ public class BirdMove : MonoBehaviour
         else
         {
             // Destroy after a set amount of time (i.e. has been off screen for too long)
-            Destroy(gameObject, 10f);
+            Destroy(gameObject, 20f);
         }
     }
 
@@ -75,6 +75,7 @@ public class BirdMove : MonoBehaviour
         else if (coll.name == "Dog")
         {
             GameObject.Find("Game Manager").GetComponent<GameManager>().loseHealth(1, GameManager.lossState.BIRD);
+            Destroy(gameObject);
         }
     }
 

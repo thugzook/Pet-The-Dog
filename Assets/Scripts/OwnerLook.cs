@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEditor;
 
-class Owner
+public class Owner
 {
     /*
      * _timeMin and _timeMax adjust the length of READY state of owner
@@ -47,7 +47,7 @@ public class OwnerLook : MonoBehaviour
     private static float timer;
     SpriteRenderer sprite;
     System.Random rand = new System.Random();
-    Owner owner;
+    public Owner owner;
 
     // Start is called before the first frame update
     void Awake()
