@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class GameManager : MonoBehaviour
     public static List<GameObject> attackBirdList = new List<GameObject>();
 
     private static Vector3 dogPosition;
-    private static int level = 6;
+    private static int level = -1;
     private static float health = 3f;
     private static int spawnRate = 4;
 
@@ -36,9 +37,8 @@ public class GameManager : MonoBehaviour
     void LevelLose(lossState loss)
     {
         // Pause all functionality
-        Time.timeScale = 0;
-        GameObject.Find("Hand").GetComponent<HandShake>().enabled = false;
-        GameObject.Find("Click Manager").GetComponent<ClickManager>().enabled = false;
+        Pause();
+
         switch (loss)
         {
             case lossState.OWNER:
@@ -54,13 +54,13 @@ public class GameManager : MonoBehaviour
         // make restart button visible and interactable
         mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().alpha = 1;
         mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().interactable = true;
+        mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().blocksRaycasts = true;
     }
     
     public void LevelRestart()
     {
-        Time.timeScale = 1;
-        mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().alpha = 0;
-        mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().interactable = false;
+        // resume functionality
+        Resume();
 
 
         // Reload scene
@@ -89,21 +89,6 @@ public class GameManager : MonoBehaviour
         mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().interactable = false;
     }
 
-    public void loseHealth(float amt, lossState loss)
-    {
-        health -= amt;
-        if (health <= 0)
-        {
-            healthUI.GetComponent<UnityEngine.UI.Text>().text = "0";
-            LevelLose(loss);
-        }
-        else
-        {
-            //GameObject.Find("Click Manager").GetComponent<ClickManager>().handRetract.Invoke();
-            healthUI.GetComponent<UnityEngine.UI.Text>().text = health.ToString();
-        }
-    }
-
     void Awake()
     {
 
@@ -123,6 +108,12 @@ public class GameManager : MonoBehaviour
 
     void levelManager()
     {
+        if (level != -1)
+        {
+            Pause();
+            ShowPrompt();
+        }
+
         switch (level)
         {
             // Level 0: Main Menu
@@ -218,7 +209,72 @@ public class GameManager : MonoBehaviour
         }
     }
 
-private IEnumerator DecreaseProgress()
+    public void loseHealth(float amt, lossState loss)
+    {
+        health -= amt;
+        if (health <= 0)
+        {
+            healthUI.GetComponent<UnityEngine.UI.Text>().text = "0";
+            LevelLose(loss);
+        }
+        else
+        {
+            //GameObject.Find("Click Manager").GetComponent<ClickManager>().handRetract.Invoke();
+            healthUI.GetComponent<UnityEngine.UI.Text>().text = health.ToString();
+        }
+    }
+
+    private void Pause()
+    {
+        // Pause all functionality
+        Time.timeScale = 0;
+        GameObject.Find("Hand").GetComponent<HandShake>().enabled = false;
+        GameObject.Find("Click Manager").GetComponent<ClickManager>().enabled = false;
+        mainMenuUI.transform.Find("LevelTextContainer").GetComponent<CanvasGroup>().blocksRaycasts = true;
+    }
+
+    private void ShowPrompt()
+    {
+        // Show Menu UI and set flavor text
+        mainMenuUI.transform.Find("LevelTextContainer").GetComponent<CanvasGroup>().interactable = true;
+        mainMenuUI.transform.Find("LevelTextContainer").GetComponent<CanvasGroup>().alpha = 1;
+        switch (level)
+        {
+            case -1:
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level -1");
+                break;
+            case 0:
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level 0");
+                break;
+            case 1:
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level 1");
+                break;
+            case 2:
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level 2");
+                break;
+            case 3:
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level 3");
+                break;
+            case 4:
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level 4");
+                break;
+        }
+
+        // Start coroutine of listener
+        StartCoroutine("WaitPrompt");
+    }
+
+    private void Resume()
+    {
+        Time.timeScale = 1;
+        mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().alpha = 0;
+        mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().interactable = false;
+        GameObject.Find("Hand").GetComponent<HandShake>().enabled = true;
+        GameObject.Find("Click Manager").GetComponent<ClickManager>().enabled = true;
+        StopCoroutine("WaitPrompt");
+    }
+
+    private IEnumerator DecreaseProgress()
     {
         while (true)
         {
@@ -228,8 +284,8 @@ private IEnumerator DecreaseProgress()
         }
     }
 
-// Spawns attack birds
-private IEnumerator SpawnAttackBirds()
+    // Spawns attack birds
+    private IEnumerator SpawnAttackBirds()
     {
         float timer = 0f;
         while (true)
@@ -267,6 +323,20 @@ private IEnumerator SpawnAttackBirds()
                 }
             }
             yield return null;
+        }
+    }
+    public IEnumerator WaitPrompt()
+    {
+        // Create listener for WaitForUIButtons object
+        var waitForButton = new WaitForUIButtons(mainMenuUI.transform.Find("LevelTextContainer").transform.Find("Continue").GetComponent<Button>());
+        yield return waitForButton.Reset();
+
+        // resume game and hide LevelTextContainer
+        if (waitForButton.PressedButton == mainMenuUI.transform.Find("LevelTextContainer").transform.Find("Continue").GetComponent<Button>())
+        {
+            mainMenuUI.transform.Find("LevelTextContainer").GetComponent<CanvasGroup>().interactable = false;
+            mainMenuUI.transform.Find("LevelTextContainer").GetComponent<CanvasGroup>().alpha = 0;
+            Resume();
         }
     }
 
