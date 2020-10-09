@@ -16,6 +16,11 @@ public class GameManager : MonoBehaviour
     public GameObject mainMenuUI;
     public GameObject owner;
 
+    public AudioSource audioSrc;
+    public AudioClip ding;
+    public AudioClip woof;
+    public AudioClip squawk;
+
     public int attackBirdLimit = 2;
     public static List<GameObject> attackBirdList = new List<GameObject>();
 
@@ -82,6 +87,15 @@ public class GameManager : MonoBehaviour
 
         // Reset health
         health = 3f;
+
+        // Play level win animations
+        if (level == 0)
+        {
+            Pause();
+            audioSrc.PlayOneShot(ding, 1);
+            while (audioSrc.isPlaying) { }
+            Resume();
+        }
 
         // Reload scene
         levelUI.GetComponent<UnityEngine.UI.Text>().text = "Level " + (level + 1);
@@ -193,8 +207,8 @@ public class GameManager : MonoBehaviour
                 owner.SetActive(false);
                 healthUI.SetActive(true);
                 attackBirdList.Clear();
-                attackBirdLimit = 3;
-                spawnRate = 4;
+                attackBirdLimit = 4;
+                spawnRate = 3;
                 GameObject.Find("PoopBird").GetComponent<BirdMove>().enabled = true;
                 GameObject.Find("PoopBird").GetComponent<BirdMove>().spawnRate = 1;
                 StartCoroutine("DecreaseProgress");
@@ -244,19 +258,25 @@ public class GameManager : MonoBehaviour
                 mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level -1");
                 break;
             case 0:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level 0");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Old dog Bartholomew has been sitting outside by himself the last few days and you can't stand to see him by himself.\nYou take it upon yourself to give that dog some love. You reach over to pet him.");
                 break;
             case 1:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level 1");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Old Man Jenkins doesn't take to kindly to you petting his dog. Make sure he doesn't catch you.");
                 break;
             case 2:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level 2");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Anotha day. Anotha dolla.");
                 break;
             case 3:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level 3");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Winter migrations have started and the birds are in full force this morning.\nDon't let them shit on your good day.");
                 break;
             case 4:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level 4");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("The bird coalition don't take too kindly to you intruding on their pooping zone.\nThey're now armed and dangerous. Don't let them near Bartholomew.");
+                break;
+            case 5:
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Now they're arming and sending their kids off to the front lines...\nGive them a 5-fingered welcome.");
+                break;
+            case 6:
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("It's Sunday, and Old Man Jenkins has taken the day off to praise the Lord.\nThe birds see this as an opportunity to raise their last offensive. Show them the power of love.");
                 break;
         }
 
@@ -363,7 +383,7 @@ public class GameManager : MonoBehaviour
         LevelWin();
     }
 
-    // Update is called once per frame
+        // Update is called once per frame
     void Update()
     {
         
