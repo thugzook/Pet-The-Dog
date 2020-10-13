@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
     public GameObject attackBird;
     public GameObject clickManager;
     public GameObject healthUI;
-    public GameObject levelUI;
     public GameObject mainMenuUI;
     public GameObject owner;
 
@@ -26,7 +25,7 @@ public class GameManager : MonoBehaviour
 
     private static Vector3 dogPosition;
     private static int level = -1;
-    private static float health = 3f;
+    public static float health = 3f;
     private static int spawnRate = 4;
 
     System.Random rand = new System.Random();
@@ -71,7 +70,6 @@ public class GameManager : MonoBehaviour
         // Reload scene
         health = 3f;
         levelManager();
-        levelUI.GetComponent<UnityEngine.UI.Text>().text = "Level " + (level + 1);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
         // renable game elements
@@ -89,16 +87,16 @@ public class GameManager : MonoBehaviour
         health = 3f;
 
         // Play level win animations
-        if (level == 0)
+        if (level != 0)
         {
             Pause();
             audioSrc.PlayOneShot(ding, 1);
-            while (audioSrc.isPlaying) { }
+            float wait = audioSrc.clip.length;
+            while (wait > 0) { wait -= Time.deltaTime; }
             Resume();
         }
 
         // Reload scene
-        levelUI.GetComponent<UnityEngine.UI.Text>().text = "Level " + (level + 1);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         mainMenuUI.transform.Find("Restart").GetComponent<CanvasGroup>().interactable = false;
     }
@@ -117,7 +115,6 @@ public class GameManager : MonoBehaviour
         dogPosition = GameObject.Find("Dog").GetComponent<Transform>().position;
         // Manage levels
         levelManager();
-        levelUI.GetComponent<UnityEngine.UI.Text>().text = "Level " + (level + 1);
     }
 
     void levelManager()
@@ -135,24 +132,23 @@ public class GameManager : MonoBehaviour
                 // hide all game objects
                 GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
                 healthUI.SetActive(false);
-                levelUI.GetComponent<UnityEngine.UI.Text>().text = "";
 
                 // disable click manager
                 clickManager.GetComponent<ClickManager>().enabled = false;
 
-                // show menu buttons
-                mainMenuUI.GetComponent<CanvasGroup>().alpha = 1;
-                mainMenuUI.GetComponent<CanvasGroup>().interactable = true;
-
                 // adjust alpha of all game Objects
                 foreach (GameObject go in allObjects)
                 {
-                    if (go.GetComponent<Renderer>() && !(go.name == "Background"))
+                    if (go.GetComponent<Renderer>() && !(go.name == "Background") && !(go.name == "Title"))
                     {
                         Color newColor = new Color(1, 1, 1, 0);
                         go.GetComponent<Renderer>().material.color = newColor;
                     }
                 }
+                // show menu buttons
+                mainMenuUI.GetComponent<CanvasGroup>().alpha = 1;
+                mainMenuUI.GetComponent<CanvasGroup>().interactable = true;
+                mainMenuUI.transform.Find("Title").gameObject.GetComponent<SpriteRenderer>().enabled = true;
                 break;
             // Level 1: No Grandpa
             case 0:
@@ -228,13 +224,11 @@ public class GameManager : MonoBehaviour
         health -= amt;
         if (health <= 0)
         {
-            healthUI.GetComponent<UnityEngine.UI.Text>().text = "0";
             LevelLose(loss);
         }
         else
         {
             //GameObject.Find("Click Manager").GetComponent<ClickManager>().handRetract.Invoke();
-            healthUI.GetComponent<UnityEngine.UI.Text>().text = health.ToString();
         }
     }
 
@@ -364,6 +358,8 @@ public class GameManager : MonoBehaviour
     {
         // Access every gameobject and reduce their alpha value
         GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+
+
         for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / aTime)
         {
             foreach (GameObject go in allObjects)
@@ -377,9 +373,15 @@ public class GameManager : MonoBehaviour
             }
             yield return null;
         }
+        
         // re-enable click manager once fading is done
         clickManager.GetComponent<ClickManager>().enabled = true;
-        
+
+        // Disable main menu
+        mainMenuUI.transform.Find("Start").gameObject.SetActive(false);
+        mainMenuUI.transform.Find("Quit").gameObject.SetActive(false);
+        mainMenuUI.transform.Find("Title").gameObject.SetActive(false);
+
         LevelWin();
     }
 

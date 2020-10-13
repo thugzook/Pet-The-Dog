@@ -26,6 +26,10 @@ public class FadeTest : MonoBehaviour
         // Hide menu options
         transform.parent.gameObject.GetComponent<CanvasGroup>().alpha = 0f;
         transform.parent.gameObject.GetComponent<CanvasGroup>().interactable = false;
+        transform.parent.Find("Title").gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        /// TODO: Fix title screen disappearing
+        ///     separate menu options 
+        ///     finish cleaning up menu text
     }
 
     public void Quit()

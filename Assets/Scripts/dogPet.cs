@@ -7,7 +7,8 @@ public class dogPet : MonoBehaviour
 {
     public Sprite idleAnim;
     public Sprite petAnim;
- 
+
+    private Animation anim;
     void Pet()
     {
         
@@ -16,16 +17,32 @@ public class dogPet : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        this.GetComponent<SpriteRenderer>().sprite = idleAnim;
+        gameObject.GetComponent<SpriteRenderer>().sprite = idleAnim;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (ClickManager.isPet)
-            this.GetComponent<SpriteRenderer>().sprite = petAnim;
+        {
+            // Prevent animation fromplaying if playing already
+            /*if (!anim.IsPlaying(petAnim.name))
+            {
+                anim.clip = petAnim;
+                anim.Play();
+            }*/
+            gameObject.GetComponent<SpriteRenderer>().sprite = petAnim;
+        }
+
         else
-            this.GetComponent<SpriteRenderer>().sprite = idleAnim;
+        {
+            /*if (!anim.IsPlaying(idleAnim.name))
+            {
+                anim.clip = idleAnim;
+                anim.Play();
+            }*/
+            gameObject.GetComponent<SpriteRenderer>().sprite = idleAnim;
+        }
     }
 
     // Detects if player collides with Dog

@@ -66,7 +66,6 @@ public class OwnerLook : MonoBehaviour
         timer = (float)owner._timeRest;
 
         sprite = GetComponent<SpriteRenderer>();
-        sprite.color = Color.green;
     }
 
     // Update is called once per frame
@@ -93,14 +92,12 @@ public class OwnerLook : MonoBehaviour
                 // Ready time equals some random float between timeMax and timeMin
                 timer = (float)(rand.NextDouble() * (owner._timeMax - owner._timeMin) + owner._timeMin);
                 owner._state = state.READY;
-                sprite.color = Color.yellow;
             }
             else if (owner._state == state.READY)
             {
                 // Looking time equals some random float between 3.0f and 1.0f
                 timer = (float)(rand.NextDouble() * (3.0f - 1.0f) + 1.0f);
                 owner._state = state.LOOKING;
-                sprite.color = Color.red;
                 sprite.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Art/grandpaangry.png", typeof(Sprite));
             }
             else // owner._state == state.LOOKING
@@ -108,7 +105,6 @@ public class OwnerLook : MonoBehaviour
                 // Idle time ranges between timeRest and timeRest / 2
                 timer = (float)(rand.NextDouble() * (owner._timeRest - owner._timeRest / 2) + owner._timeRest / 2);
                 owner._state = state.IDLE;
-                sprite.color = Color.green;
                 sprite.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Art/grandpacalm.png", typeof(Sprite));
             }
         }
