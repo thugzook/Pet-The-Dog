@@ -210,11 +210,9 @@ public class GameManager : MonoBehaviour
                 StartCoroutine("DecreaseProgress");
                 StartCoroutine("SpawnAttackBirds");
                 break;
-            // level 8: INSANE bird level
+            // VICTORY
             case 7:
-                break;
-            // level 9: NUKE. Time limit
-            case 8:
+                SceneManager.LoadScene("WIN");
                 break;
         }
     }
@@ -252,25 +250,25 @@ public class GameManager : MonoBehaviour
                 mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("level -1");
                 break;
             case 0:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Old dog Bartholomew has been sitting outside by himself the last few days and you can't stand to see him by himself.\nYou take it upon yourself to give that dog some love. You reach over to pet him.");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Old dog Bartholomew has been sitting outside by himself the last few days and you can't stand to see him by himself.\n\nYou take it upon yourself to give that dog some love. \n\nYou reach over to pet him.");
                 break;
             case 1:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Old Man Jenkins doesn't take to kindly to you petting his dog. Make sure he doesn't catch you.");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Old Man Jenkins doesn't take to kindly to you petting his dog. \n\nMake sure he doesn't catch you.");
                 break;
             case 2:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Anotha day. Anotha dolla.");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Love is like the stock market.\n\nIf you supply too much, the demand goes down.");
                 break;
             case 3:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Winter migrations have started and the birds are in full force this morning.\nDon't let them shit on your good day.");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Winter migrations have started and the birds are in full force this morning.\n\nDon't let them shit on your good day.");
                 break;
             case 4:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("The bird coalition don't take too kindly to you intruding on their pooping zone.\nThey're now armed and dangerous. Don't let them near Bartholomew.");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("The bird coalition don't take too kindly to you intruding on their pooping zone. They're now armed and dangerous.\n\nDon't let them near Bartholomew.");
                 break;
             case 5:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Now they're arming and sending their kids off to the front lines...\nGive them a 5-fingered welcome.");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("Now they're arming and sending their kids off to the front lines...\n\nGive them a 5-fingered welcome.");
                 break;
             case 6:
-                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("It's Sunday, and Old Man Jenkins has taken the day off to praise the Lord.\nThe birds see this as an opportunity to raise their last offensive. Show them the power of love.");
+                mainMenuUI.transform.Find("LevelTextContainer").transform.Find("LevelText").GetComponent<TextMeshProUGUI>().SetText("It's Sunday, and Old Man Jenkins has taken the day off to praise the Lord.\n\nThe birds see this as an opportunity to raise their last offensive. Show them the power of love.");
                 break;
         }
 

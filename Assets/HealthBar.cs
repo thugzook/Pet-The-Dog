@@ -13,7 +13,6 @@ public class HealthBar : MonoBehaviour
 
     public Image[] Hearts;
 
-    private const float INCREMENT = .5f;
     void Start()
     {
         
@@ -23,9 +22,19 @@ public class HealthBar : MonoBehaviour
     void Update()
     {
         // Health is on a 3 heart scale but .5 increments
-        for (int i = 0; i < 3 / INCREMENT; i++)
+        for (int i = 0; i < 3; i ++)
         {
-           
+            if (i < GameManager.health)
+            {
+                if (i < GameManager.health - 0.5f) // meaning health incremented by a half is a full heart, assign a half heart
+                    Hearts[i].sprite = fullHeart;
+                else
+                    Hearts[i].sprite = halfHeart;
+            }
+            else
+            {
+                Hearts[i].sprite = noHeart;
+            }
         }
     }
 }

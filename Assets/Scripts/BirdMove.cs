@@ -5,6 +5,7 @@ using UnityEngine;
 public class BirdMove : MonoBehaviour
 {
     public GameObject poopObject;
+    public Sprite deadBird;
 
     public float spawnRate = 3f; // lower value increases frequency
     public bool isPoop = false;
@@ -67,8 +68,10 @@ public class BirdMove : MonoBehaviour
         {
             rb2d.velocity = new Vector2(0, 0);
             rb2d.gravityScale = 1;
+            gameObject.GetComponent<AudioSource>().PlayOneShot(GetComponent<AudioSource>().clip);
             // disable further collisions
             gameObject.GetComponent<BoxCollider2D>().size = Vector2.zero;
+            gameObject.GetComponent<SpriteRenderer>().sprite = deadBird;
             // remove the bird from the list
             GameManager.attackBirdList.Remove(gameObject);
         }

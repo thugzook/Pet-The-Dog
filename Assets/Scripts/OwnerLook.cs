@@ -49,6 +49,12 @@ public class OwnerLook : MonoBehaviour
     System.Random rand = new System.Random();
     public Owner owner;
 
+    private AudioSource audioSource;
+    public AudioClip alert;
+    public AudioClip hmm;
+    public GameObject exclaim;
+    public Sprite Angry;
+    public Sprite Calm;
     // Start is called before the first frame update
     void Awake()
     {
@@ -66,6 +72,7 @@ public class OwnerLook : MonoBehaviour
         timer = (float)owner._timeRest;
 
         sprite = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -92,20 +99,31 @@ public class OwnerLook : MonoBehaviour
                 // Ready time equals some random float between timeMax and timeMin
                 timer = (float)(rand.NextDouble() * (owner._timeMax - owner._timeMin) + owner._timeMin);
                 owner._state = state.READY;
+                //sprite.color = new Color(0, 0.5f, 0.5f);
+                audioSource.clip = alert;
+                audioSource.Play(0);
+                exclaim.SetActive(true);
             }
             else if (owner._state == state.READY)
             {
                 // Looking time equals some random float between 3.0f and 1.0f
                 timer = (float)(rand.NextDouble() * (3.0f - 1.0f) + 1.0f);
                 owner._state = state.LOOKING;
-                sprite.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Art/grandpaangry.png", typeof(Sprite));
+                sprite.sprite = Angry;
+                audioSource.clip = hmm;
+                audioSource.Play(0);
+                exclaim.SetActive(true);
+                gameObject.GetComponent<Animation>().Stop();
             }
             else // owner._state == state.LOOKING
             {
                 // Idle time ranges between timeRest and timeRest / 2
                 timer = (float)(rand.NextDouble() * (owner._timeRest - owner._timeRest / 2) + owner._timeRest / 2);
                 owner._state = state.IDLE;
-                sprite.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Art/grandpacalm.png", typeof(Sprite));
+                gameObject.GetComponent<Animation>().Play();
+                sprite.sprite = Calm;
+                //sprite.color = new Color(0, 0.5f, 0.2f);
+                exclaim.SetActive(false);
             }
         }
     }

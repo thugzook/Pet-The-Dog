@@ -7,7 +7,7 @@ public class dogPet : MonoBehaviour
 {
     public Sprite idleAnim;
     public Sprite petAnim;
-
+    private AudioSource dogPettingSound;
     private Animation anim;
     void Pet()
     {
@@ -17,6 +17,7 @@ public class dogPet : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        dogPettingSound = GetComponent<AudioSource>();
         gameObject.GetComponent<SpriteRenderer>().sprite = idleAnim;
     }
 
@@ -31,6 +32,8 @@ public class dogPet : MonoBehaviour
                 anim.clip = petAnim;
                 anim.Play();
             }*/
+            if (!dogPettingSound.isPlaying)
+                dogPettingSound.Play(0);
             gameObject.GetComponent<SpriteRenderer>().sprite = petAnim;
         }
 
@@ -41,6 +44,7 @@ public class dogPet : MonoBehaviour
                 anim.clip = idleAnim;
                 anim.Play();
             }*/
+            dogPettingSound.Stop();
             gameObject.GetComponent<SpriteRenderer>().sprite = idleAnim;
         }
     }
