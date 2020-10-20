@@ -8,3 +8,7 @@ Pet Bartholomew the dog whilst avoiding the various obstacles and dangers in you
 * *Home-studio* sound effects
 * Hand-drawn art
 * A loving dog
+<p align="center">
+  <img src="/Images/titlescreen.gif"; width="300px"; height="auto";/>
+  <img src="/Images/extend.gif"; width="300px"; height="auto";/>
+</p>
