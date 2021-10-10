@@ -13,7 +13,7 @@ It features hand drawn art, dynamic instance generation and a loving dog. I crea
 * A loving dog
 
 ## Results
-This project introduced me to both the Unity design pattern and C#.
+This project introduced me to both the Unity design pattern and C#. While there's a lot that could have been improved--like the fact that I have over 5 GameObjects just to handle the 'squiggly arm' interaction--Pet the Dog is still pretty rad. Even with zero game development knowledge, I can make something that works and that people love.
 
 <p align="center">
   <img src="/Images/titlescreen.gif"; width="600px"; height="auto";/>
